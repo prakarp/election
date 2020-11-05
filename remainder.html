@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="origin" name="referrer">
+
+    <script>
+        function calculate2(cardid) {
+            var result = 0;
+            var cardElem = document.getElementById(cardid);
+            var trailing_by_count = parseFloat(cardElem.querySelector('input[name="trailing_by_count"]').value);
+            var remaining_uncounted = parseFloat(cardElem.querySelector('input[name="remaining_uncounted"]').value);
+            var twon = 2.0 * remaining_uncounted;
+            var trailn = trailing_by_count + remaining_uncounted;
+            // result = (trailing_by_count + remaining_uncounted)/(2*remaining_uncounted);
+            result = (trailn / twon) * 100.0;
+            result = result.toFixed(2);
+            var nvotes = trailing_by_count + (remaining_uncounted / 2) + 1;
+            var resultsElem;
+            resultsElem = cardElem.querySelector('span[name="result_share_n"]');
+            resultsElem.innerHTML = '' + nvotes;
+            resultsElem = cardElem.querySelector('span[name="result_share_p"]');
+            resultsElem.innerHTML = '' + result;
+            resultsElem = cardElem.querySelector('span[name="result_n1"]');
+            resultsElem.innerHTML = '' + remaining_uncounted;
+            resultsElem = cardElem.querySelector('span[name="result_n2"]');
+            resultsElem.innerHTML = '' + remaining_uncounted;
+        }
+
+</script>
+
+</head>
+
+<body style="font-size: 20px;">
+
+    <div class="card" id="remainder_card">
+        <div name="calcform">
+            <p>
+                Number of votes that a candidate is trailing by : (E.g. Biden is trailing by 165000 votes behind Trump
+                in PA)
+            </p>
+            <p>
+                <input type="number" name="trailing_by_count" min="0" max="10000000000">
+                </input>
+            </p>
+            <p>
+                Votes To be Counted (E.g. PA still has about 801000 votes to be counted)
+            </p>
+            <p>
+                <input type="number" name="remaining_uncounted" min="0" max="1000000000">
+                </input>
+            </p>
+            <p>
+                The Trailing Candidate should get at least the following percentage of the remaining uncounted votes.
+            </p>
+            <p>
+                <div name="result">
+                    <p>
+                        <span name="result_share_n">____</span> of the remaining <span name="result_n1">___</span> uncounted votes.</div>
+                    </p>
+                    <p>
+                        <span name="result_share_p">____</span> % of the remaining <span name="result_n2">___</span> uncounted votes.</div>
+                    </p>
+                </div>
+            </p>
+        </div>
+        <button type="button" onclick="calculate2('remainder_card')">Calculate</button>
+    </div>
+
+
+    </div>
+
+
+</body>
+
+</html>
