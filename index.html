@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="origin" name="referrer">
+
+    <style>
+        .card {
+            width: 400px;
+            border: 5px solid green;
+            padding: 10px;
+            margin: 15px;
+            float: left;
+        }
+
+        #card2 {
+            background-color: rgb(95, 160, 226);
+        }
+
+        #remainder_card {
+            background-color: rgb(223, 147, 71);
+        }
+
+        label {
+            display: block;
+            margin-block-end: 5%;
+        }
+
+        input {
+            display: block;
+            margin-block-end: 5%;
+        }
+    </style>
+
+    <script>
+        function calculate(formNameText) {
+            var f = document.forms[formNameText];
+            var cardElem = f;
+            var trailing_by_count = parseFloat(f["trailing_by_count"].value);
+            var remaining_uncounted = parseFloat(f["remaining_uncounted"].value);
+            var twon = 2.0 * remaining_uncounted;
+            var trailn = trailing_by_count + remaining_uncounted;
+            result = (trailn / twon) * 100.0;
+            result = result.toFixed(2);
+            var nvotes = trailing_by_count + (remaining_uncounted / 2) + 1;
+            var resultsElem;
+            resultsElem = cardElem.querySelector('span[name="result_share_n"]');
+            resultsElem.innerHTML = '' + nvotes;
+            resultsElem = cardElem.querySelector('span[name="result_share_p"]');
+            resultsElem.innerHTML = '' + result;
+            resultsElem = cardElem.querySelector('span[name="result_n1"]');
+            resultsElem.innerHTML = '' + remaining_uncounted;
+            resultsElem = cardElem.querySelector('span[name="result_n2"]');
+            resultsElem.innerHTML = '' + remaining_uncounted;
+            return false;
+        }
+
+        function calculate2(cardid) {
+            var result = 0;
+            var cardElem = document.getElementById(cardid);
+            var trailing_by_count = parseFloat(cardElem.querySelector('input[name="trailing_by_count"]').value);
+            var predicted_win_percentage = parseFloat(cardElem.querySelector('input[name="predicted_win_percentage"]').value) / 100;
+            var minimum_req_uncounted = Math.ceil((trailing_by_count) / ((2 * predicted_win_percentage) - 1));
+
+            var resultsElem;
+            resultsElem = cardElem.querySelector('span[name="minimum_req_uncounted"]');
+            resultsElem.innerHTML = '' + minimum_req_uncounted;
+
+            var known_uncounted = parseFloat(cardElem.querySelector('input[name="known_uncounted"]').value);
+
+            var votes_for_subject = Math.ceil(predicted_win_percentage * known_uncounted);
+            var votes_for_other = known_uncounted - votes_for_subject;
+
+            var subject_will_trail_by = trailing_by_count - votes_for_subject;
+
+            resultsElem = cardElem.querySelector('span[name="votes_remaining"]');
+            resultsElem.innerHTML = '' + known_uncounted;
+
+            resultsElem = cardElem.querySelector('span[name="votes_for_subject"]');
+            resultsElem.innerHTML = '' + votes_for_subject;
+
+            resultsElem = cardElem.querySelector('span[name="votes_for_other"]');
+            resultsElem.innerHTML = '' + votes_for_other;
+
+
+            var votes_diff_text;
+            var display_final_number = false;
+            var votes_final_displayed;
+
+            if (subject_will_trail_by > 0) {
+                votes_diff_text = ' TRAIL ';
+                votes_final_displayed = subject_will_trail_by;
+                display_final_number = false;
+            } else if (subject_will_trail_by < 0) {
+                votes_diff_text = ' LEAD ';
+                votes_final_displayed = 0 - subject_will_trail_by;
+                display_final_number = true;
+            } else {
+                votes_diff_text = ' TIE (NEITHER LEAD, NOR TRAIL) ';
+            }
+
+            resultsElem = cardElem.querySelector('span[name="lead_or_trail"]');
+            resultsElem.innerHTML = '' + votes_diff_text;
+
+            if (display_final_number) {
+                resultsElem = cardElem.querySelector('span[name="lead_or_trail_by"]');
+                resultsElem.innerHTML = ' by ' + votes_final_displayed + ' votes';
+            }
+        }
+
+
+
+    </script>
+
+</head>
+
+<body style="font-size: 20px;">
+
+    <div class="card" id="remainder_card">
+        <form name="calcform" onsubmit="return calculate('calcform')">
+            <label for="trailing_by_count">
+                Number of votes that a candidate is trailing by : (E.g. Biden is trailing by 165000 votes behind Trump
+                in PA) </label>
+            <input type="number" name="trailing_by_count" min="0" max="10000000000" required>
+            </input>
+            <label for="remaining_uncounted">
+                Votes To be Counted (E.g. PA still has about 801000 votes to be counted)
+            </label>
+            <input type="number" name="remaining_uncounted" min="0" max="1000000000" required>
+            </input>
+
+            <input type="submit" value="Calculate" />
+
+            <p>
+                The Trailing Candidate should get at least the following percentage of the remaining uncounted
+                votes.
+            </p>
+            <p>
+            <div name="result">
+                <span name="result_share_n">____</span> of the remaining <span name="result_n1">___</span>
+                uncounted
+                votes.
+            </div>
+            </p>
+            <p>
+                <span name="result_share_p">____</span> % of the remaining <span name="result_n2">___</span>
+                uncounted
+                votes.
+            </p>
+        </form>
+
+    </div>
+
+    <div class="card" id="card2">
+        <p>
+            Number of votes that a candidate is trailing by: (E.g. Biden is trailing by 165000 votes behind Trump in PA)
+        </p>
+        <p>
+            <input type="number" name="trailing_by_count" min="0" max="10000000000">
+            </input>
+        </p>
+        <p>
+            Percentage of votes the trailing candidate is expected to win, of the remaining uncounted votes.
+        </p>
+        <p>
+            <input type="number" name="predicted_win_percentage" min="0" max="100">
+            </input>
+        </p>
+
+        <button type="button" onclick="calculate2('card2')">Calculate</button>
+
+        <p>
+            Results:
+        </p>
+        <p>
+            The trailing candidate needs at least the following number of uncounted votes.
+        </p>
+        <p>
+            <span name="minimum_req_uncounted">____</span>
+        </p>
+
+        <p>
+            More calculations: Fill in the number of uncounted votes below, if you know and click Calculate above.
+        </p>
+        <p>
+            <input type="number" name="known_uncounted" min="0" max="1000000000">
+            </input>
+        </p>
+
+        <p>
+            Results:
+        </p>
+        <p>
+            Of the remaining Uncounted Votes: <span name="votes_remaining">_____</span>
+            <br />
+            the trailing candidate will get: <span name="votes_for_subject">_____</span>
+            <br />
+            and the other will get: <span name="votes_for_other">____</span>
+            <br />
+            After counting is completed, the trailing candidate will then
+            <span name="lead_or_trail">____</span>
+            <span name="lead_or_trail_by">_____</span>.
+        </p>
+    </div>
+
+
+</body>
+
+</html>
